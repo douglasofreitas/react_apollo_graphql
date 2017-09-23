@@ -16,7 +16,7 @@ import './App.css';
 import ChannelsListWithData from './components/ChannelsListWithData';
 
 const schema = makeExecutableSchema({ typeDefs });
-addMockFunctionsToSchema({ schema });
+//addMockFunctionsToSchema({ schema });
 
 //mock
 /*

@@ -22,7 +22,7 @@ const ChannelsList = ({ data: {loading, error, channels }}) => {
     </div>;
 };
 
-const channelsListQuery = gql`
+export const channelsListQuery = gql`
 query ChannelsListQuery {
   channels {
     id
@@ -31,4 +31,6 @@ query ChannelsListQuery {
 }
 `;
 
-export default graphql(channelsListQuery)(ChannelsList);
+export default graphql(channelsListQuery, {
+  options: { pollInterval: 5000 },
+})(ChannelsList);
