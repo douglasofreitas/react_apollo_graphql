@@ -8,7 +8,25 @@ const AddChannel = ({mutate}) => {
       evt.persist();
       mutate({ 
         variables: { name: evt.target.value },
-        refetchQueries: [{ query: channelsListQuery }], 
+        
+        // refetchQueries: [{ query: channelsListQuery }], // use to refetch in server - not recommend  
+        
+        optimisticResponse: {
+          addChannel: {
+            name: evt.target.value,
+            id: Math.round(Math.random() * -1000000),
+            __typename: 'Channel',
+          },
+        },
+        
+        update: (store, { data: { addChannel } }) => {
+          // Read the data from the cache for this query.
+          const data = store.readQuery({query: channelsListQuery });
+          // Add our channel from the mutation to the end.
+          data.channels.push(addChannel);
+          // Write the data back to the cache.
+          store.writeQuery({ query: channelsListQuery, data });
+        },
       })
       .then( res => {
         console.log(res);
