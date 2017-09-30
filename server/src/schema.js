@@ -17,6 +17,10 @@ type Message {
   text: String
 }
 
+type Subscription {
+  messageAdded(channelId: ID!): Message
+}
+
 input MessageInput{
   channelId: ID!
   text: String
