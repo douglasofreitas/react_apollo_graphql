@@ -17,6 +17,9 @@ import {
   addMockFunctionsToSchema
 } from 'graphql-tools';
 import { mockNetworkInterfaceWithSchema } from 'apollo-test-utils';
+
+import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-transport-ws';
+
 import { typeDefs } from './schema';
 import logo from './logo.svg';
 import './App.css';
@@ -42,9 +45,19 @@ const networkInterface = createNetworkInterface({
 //use middleware to test altency
 networkInterface.use([{
   applyMiddleware(req, next) {
+    console.log('applyMiddleware', next);
     setTimeout(next, 500);
   },
 }]);
+
+const wsClient = new SubscriptionClient(`ws://localhost:4000/subscriptions`, {
+  reconnect: true,
+});
+
+const networkInterfaceWithSubscriptions = addGraphQLSubscriptions(
+  networkInterface,
+  wsClient,
+);
 
 function dataIdFromObject (result) {
   if (result.__typename) {
@@ -56,7 +69,7 @@ function dataIdFromObject (result) {
 }
 
 const client = new ApolloClient({
-  networkInterface,
+  networkInterface: networkInterfaceWithSubscriptions,
   customResolvers: {
     Query: {
       channel: (_, args) => {
